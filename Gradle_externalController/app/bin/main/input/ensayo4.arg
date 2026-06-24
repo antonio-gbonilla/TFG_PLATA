@@ -1,0 +1,137 @@
+mostrar("Ensayo 4: jornada completa del tractor")
+
+hora = 8
+bateria = 90
+humedad = 20
+
+distanciaBase = (2 + 10 * 2) * 2.1
+velocidadTrabajo = 2 + 3
+
+arado = falso
+sembrado = falso
+regado = falso
+fumigado = falso
+
+mientras (hora >= 8 && hora <= 18 && bateria > 20) {
+
+    si (!arado) {
+        mostrar("Inicio de jornada: se prepara el terreno mediante arado")
+
+        vueltas = 0
+
+        mientras (vueltas < 8) {
+            iniciarTarea("arar")
+            avanzar(distanciaBase, velocidadTrabajo)
+            frenar
+            finalizarTarea("arar")
+
+            si (vueltas % 2 == 0) {
+                girarSentidoContrario
+            } siNo {
+                girar(-180)
+            }
+
+            vueltas = vueltas + 1
+        }
+
+        irOrigen
+        girar(91.82)
+
+        arado = verdadero
+        hora = hora + 2
+        bateria = bateria - 15
+
+    } siNoSi (arado && !sembrado) {
+        mostrar("Terreno arado: se inicia la siembra")
+
+        vueltas = 0
+
+        mientras (vueltas < 8) {
+            iniciarTarea("sembrar")
+            avanzar(distanciaBase - 5 , velocidadTrabajo)
+            frenar
+            finalizarTarea("sembrar")
+
+            si (vueltas % 2 == 0) {
+                girarSentidoContrario
+            } siNo {
+                girar(-180)
+            }
+
+            vueltas = vueltas + 1
+        }
+
+        irOrigen
+        girar(97.94)
+
+        sembrado = verdadero
+        hora = hora + 2
+        bateria = bateria - 15
+
+
+    } siNoSi (sembrado && !regado && humedad < 40) {
+        mostrar("Semillas colocadas y terreno seco: se inicia el riego")
+
+        vueltas = 0
+
+        mientras (vueltas < 8) {
+            iniciarTarea("regar")
+            avanzar(distanciaBase - 5 , velocidadTrabajo)
+            frenar
+            finalizarTarea("regar")
+
+            si (vueltas % 2 == 0) {
+                girarSentidoContrario
+            } siNo {
+                girar(-180)
+            }
+
+            vueltas = vueltas + 1
+        }
+
+        regado = verdadero
+        humedad = humedad + 35
+        hora = hora + 2
+        bateria = bateria - 15
+
+
+    } siNoSi (sembrado && regado && !fumigado) {
+        mostrar("Cultivo sembrado y regado: se realiza fumigacion preventiva")
+
+        vueltas = 0
+
+        mientras (vueltas < 4) {
+            iniciarTarea("fumigar")
+            si (vueltas % 2 == 0) {
+                avanzar(distanciaBase-3, velocidadTrabajo + 2)
+            } siNo {
+                avanzar(distanciaBase , velocidadTrabajo + 2)
+            }
+            finalizarTarea("fumigar")
+            girarIzquierda
+            vueltas = vueltas + 1
+        }
+
+        fumigado = verdadero
+        hora = hora + 1
+        bateria = bateria - 10
+
+    } siNo {
+        mostrar("Todas las tareas de la jornada han sido completadas")
+        hora = 19
+    }
+}
+
+si (arado && sembrado && regado && fumigado) {
+    mostrar("Jornada completada correctamente: terreno arado, sembrado, regado y fumigado")
+} siNoSi (bateria <= 20) {
+    mostrar("Fin de jornada: bateria baja")
+    irOrigen
+} siNoSi (hora > 18) {
+    mostrar("Fin de jornada: fuera de horario")
+    irOrigen
+} siNo {
+    mostrar("Fin de jornada")
+}
+
+mostrar("Ensayo 4 finalizado")

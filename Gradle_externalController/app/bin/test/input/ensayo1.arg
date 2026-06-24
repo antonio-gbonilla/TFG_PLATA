@@ -1,0 +1,16 @@
+mostrar("Ensayo 1: prueba de si, siNoSi y siNo")
+
+hora = 10
+
+si (hora < 8) {
+    mostrar("Es demasiado pronto para arar")
+} siNoSi (hora <= 18) {
+    mostrar("Horario adecuado: se inicia el arado")
+    iniciarTarea("arar")
+    avanzar(20, 6)
+    finalizarTarea("arar")
+} siNo {
+    mostrar("Es demasiado tarde para arar")
+}
+
+mostrar("Fin del ensayo 1")

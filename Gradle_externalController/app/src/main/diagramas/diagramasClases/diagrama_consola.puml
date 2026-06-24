@@ -1,0 +1,35 @@
+@startuml
+title Paquete consola
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+hide empty members
+
+package "consola" {
+    class ConsoleTractorAPI {
+        + avanzar(distancia : double, velocidad : double) : void
+        + ajustarVelocidad(velocidad : double) : void
+        + retroceder(distancia : double, velocidad : double) : void
+        + frenar() : void
+        + irA(x : double, z : double, velocidad : double) : void
+        + irOrigen() : void
+        + girar(angulo : double) : void
+        + girarDerecha() : void
+        + girarIzquierda() : void
+        + girarSentidoContrario() : void
+        + mostrar(mensaje : String) : void
+        + arar(estado : boolean) : void
+        + sembrar(estado : boolean) : void
+        + regar(estado : boolean) : void
+        + fumigar(estado : boolean) : void
+    }
+}
+
+package "plata" {
+    interface TractorAPI
+}
+
+ConsoleTractorAPI ..|> TractorAPI
+
+@enduml

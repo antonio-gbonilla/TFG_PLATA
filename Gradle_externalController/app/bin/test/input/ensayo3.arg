@@ -1,0 +1,29 @@
+mostrar("Ensayo 3: mezcla de instrucciones y expresiones")
+
+vueltas = 0
+velocidad = 2 + 2
+distancia = 2 + 3 * 2
+
+StartTask("fumigar")
+
+while (vueltas < 2) {
+    Advance(distancia - 3, velocidad)
+    girarDerecha
+    vueltas = vueltas + 1
+}
+
+FinishTask("fumigar")
+
+hora = 12
+
+if (hora >= 8 && hora <= 18) {
+    Mostrar("Horario valido: se inicia el arado")
+    iniciarTarea("arar")
+    avanzar(distancia, velocidad + 1)
+    finishTask("arar")
+} else {
+    Show("Horario no valido")
+    Brake
+}
+
+mostrar("Fin del ensayo 3")

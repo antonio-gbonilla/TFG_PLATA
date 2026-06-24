@@ -1,0 +1,16 @@
+mostrar("Ensayo 2: prueba de bucle mientras")
+
+vueltas = 0
+
+iniciarTarea("fumigar")
+
+mientras (vueltas < 2) {
+    avanzar(5, 4)
+    girarSentidoContrario
+    vueltas = vueltas + 1
+}
+
+
+finalizarTarea("fumigar")
+
+mostrar("Fin del ensayo 2")

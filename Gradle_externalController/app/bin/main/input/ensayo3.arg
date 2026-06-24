@@ -1,0 +1,29 @@
+Show("Test 3: english version")
+
+laps = 0
+speed = 2 + 2
+distance = 2 + (3 * 4) / 2
+
+startTask("fumigate")
+
+While (laps < 2) {
+    advance(distance - 3, speed)
+    TurnRight
+    laps = laps + 1
+}
+
+FinishTask("fumigate")
+
+hour = 12
+
+If (hour >= 8 && hour <= 18) {
+    show("Valid schedule: plowing starts")
+    StartTask("plough")
+    Advance(distance, speed + 1)
+    finishTask("plough")
+} Else {
+    Show("Invalid schedule")
+    Brake
+}
+
+show("End of test 3")

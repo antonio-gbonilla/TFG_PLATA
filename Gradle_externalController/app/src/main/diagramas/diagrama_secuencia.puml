@@ -1,0 +1,61 @@
+@startuml
+title Diagrama de secuencia de ejecución del sistema PLATA
+
+actor Usuario
+
+participant InterpreteConsola
+participant InterpreteWebots
+participant Interprete
+participant PLATALexer
+participant PLATAParser
+participant MiVisitor
+participant "TractorAPI" as TractorAPI
+participant ConsoleTractorAPI
+participant WebotsTractorAPI
+participant TractorAutonomo
+
+alt Modo consola
+    Usuario -> InterpreteConsola : main(args)
+    InterpreteConsola -> ConsoleTractorAPI : crear instancia
+    InterpreteConsola -> Interprete : new Interprete(ConsoleTractorAPI)
+else Modo Webots
+    Usuario -> InterpreteWebots : main(args)
+    InterpreteWebots -> WebotsTractorAPI : crear instancia
+    WebotsTractorAPI -> TractorAutonomo : new TractorAutonomo()
+    InterpreteWebots -> Interprete : new Interprete(WebotsTractorAPI)
+end
+
+alt Entrada desde fichero
+    Usuario -> Interprete : ejecutarPrograma(rutaPrograma)
+else Entrada interactiva
+    Usuario -> Interprete : ejecutarDesdeConsola()
+end
+
+Interprete -> PLATALexer : new(input)
+Interprete -> PLATAParser : new(tokens)
+Interprete -> PLATAParser : programa()
+PLATAParser --> Interprete : árbol sintáctico
+
+Interprete -> MiVisitor : new MiVisitor(tractorAPI)
+Interprete -> MiVisitor : visit(tree)
+
+loop Por cada sentencia del programa
+    MiVisitor -> TractorAPI : invocar acción / evaluar instrucción
+
+    alt Implementación consola
+        TractorAPI -> ConsoleTractorAPI : avanzar(4,7)
+        ConsoleTractorAPI --> TractorAPI : ok
+    else Implementación Webots
+        TractorAPI -> WebotsTractorAPI : avanzar(4,7)
+        WebotsTractorAPI -> TractorAutonomo : ejecutar movimiento/tarea
+        TractorAutonomo --> WebotsTractorAPI : ok
+        WebotsTractorAPI --> TractorAPI : ok
+    end
+
+    TractorAPI --> MiVisitor : resultado
+end
+
+MiVisitor --> Interprete : fin de la interpretación
+Interprete --> Usuario : ejecución completada
+
+@enduml

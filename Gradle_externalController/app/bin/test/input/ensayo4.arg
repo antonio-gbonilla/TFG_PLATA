@@ -1,0 +1,102 @@
+mostrar("Ensayo 4: jornada completa del tractor")
+
+hora = 8
+bateria = 80
+humedad = 20
+
+distanciaBase = 2 + 3 * 2
+velocidadTrabajo = 2 + 3
+
+fumigado = falso
+arado = falso
+
+mientras (hora >= 8 && hora <= 18 && bateria > 20) {
+
+    si (humedad < 25) {
+        mostrar("Terreno seco: se inicia riego")
+
+        vueltas = 0
+
+        mientras (vueltas < 5) {
+            iniciarTarea("regar")
+            avanzar(distanciaBase, velocidadTrabajo)
+            finalizarTarea("regar")
+
+            si (vueltas % 2 == 0) {
+                girarSentidoContrario
+            } siNo {
+                girar(-180)
+            }
+
+
+            vueltas = vueltas + 1
+        }
+        irOrigen
+        girarDerecha
+        humedad = humedad + 30
+
+    } siNoSi (humedad >= 25 && humedad <= 60 && !arado) {
+        mostrar("Terreno adecuado: se inicia arado")
+
+        vueltas = 0
+
+        mientras (vueltas < 5) {
+            iniciarTarea("arar")
+            avanzar(distanciaBase, velocidadTrabajo + 1)
+            finalizarTarea("arar")
+
+            si (vueltas % 2 == 0) {
+                girarSentidoContrario
+            } siNo {
+                girar(-180)
+            }
+
+
+            vueltas = vueltas + 1
+        }
+        irOrigen
+        girarDerecha
+        arado = verdadero
+
+    } siNoSi (!fumigado) {
+        mostrar("Terreno humedo: se inicia fumigacion")
+
+        vueltas = 0
+
+        mientras (vueltas < 2) {
+            iniciarTarea("fumigar")
+            avanzar(distanciaBase - 2, velocidadTrabajo)
+            finalizarTarea("fumigar")
+
+            si (vueltas % 2 == 0) {
+                girarSentidoContrario
+            } siNo {
+                girar(-180)
+            }
+
+
+            vueltas = vueltas + 1
+        }
+
+        fumigado = verdadero
+
+    } siNo {
+        mostrar("No quedan tareas pendientes en esta jornada")
+        hora = 19
+    }
+
+    hora = hora + 2
+    bateria = bateria - 15
+}
+
+si (hora > 18) {
+    mostrar("Fin de jornada: fuera de horario")
+    irOrigen
+} siNoSi (bateria <= 25) {
+    mostrar("Fin de jornada: bateria baja")
+    irOrigen
+} siNo {
+    mostrar("Fin de jornada")
+}
+
+mostrar("Ensayo 4 finalizado")

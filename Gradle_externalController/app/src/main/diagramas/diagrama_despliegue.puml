@@ -1,0 +1,52 @@
+@startuml
+title Diagrama de despliegue UML del sistema PLATA
+
+skinparam shadowing false
+skinparam linetype ortho
+left to right direction
+
+node "Equipo del usuario\nWindows 11" {
+
+    artifact "Programa PLATA" as PROGRAMA
+
+    node "JVM / JDK 21" {
+        component "InterpreteConsola" as IC
+        component "InterpreteWebots" as IW
+        component "Interprete" as I
+        component "Lexer + Parser" as ANTLR
+        component "MiVisitor" as VISITOR
+        interface "TractorAPI" as API
+        component "ConsoleTractorAPI" as CAPI
+        component "WebotsTractorAPI" as WAPI
+    }
+
+    node "Consola" {
+        artifact "Salida textual" as SALIDA
+    }
+
+    node "Webots R2025a" {
+        artifact "Mundo de simulación\n(.wbt)" as WBT
+        component "TractorAutonomo" as TRACTOR
+        artifact "Tractor simulado" as ROBOT
+    }
+}
+
+PROGRAMA --> IC
+PROGRAMA --> IW
+
+IC --> I
+IW --> I
+
+I --> ANTLR
+I --> VISITOR
+VISITOR --> API
+
+CAPI ..|> API
+WAPI ..|> API
+
+CAPI --> SALIDA
+WAPI --> TRACTOR
+TRACTOR --> ROBOT
+WBT --> ROBOT
+
+@enduml

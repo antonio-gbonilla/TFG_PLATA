@@ -1,0 +1,69 @@
+@startuml
+title Diagrama de flujo de ejecución del sistema PLATA
+
+skinparam shadowing false
+skinparam activityBackgroundColor white
+skinparam activityBorderColor black
+skinparam diamondBackgroundColor white
+skinparam diamondBorderColor black
+skinparam ArrowColor black
+
+start
+
+:Seleccionar modo de ejecución;
+
+if (¿Modo consola?) then (Sí)
+  :Crear ConsoleTractorAPI;
+  :Crear Interprete(new ConsoleTractorAPI());
+else (No)
+  :Crear WebotsTractorAPI;
+  :Crear Interprete(new WebotsTractorAPI());
+endif
+
+if (¿Se pasa fichero por argumentos?) then (Sí)
+  :ejecutarPrograma(rutaPrograma);
+else (No)
+  :ejecutarDesdeConsola();
+endif
+
+partition interpretes {
+  :Leer entrada de datos;
+  :Crear PLATALexer;
+  :Se crea la tabla de tokens;
+  :Crear PLATAParser;
+  :Generar árbol sintáctico;
+  :Crear MiVisitor(tractorAPI);
+}
+
+partition plata {
+  :Recorremos el árbol sintactico;
+  :visitor.visit(tree);
+
+  while (¿Quedan sentencias por procesar?) is (Sí)
+    :Visitar nodo del árbol;
+
+    if (¿Es asignación o expresión?) then (Sí)
+      :Evaluar expresión;
+      :Actualizar variables o devolver Valor;
+    else (No)
+      :Interpretar instrucción;
+      :Invocar método de TractorAPI;
+    endif
+
+  endwhile (No)
+}
+
+if (¿Implementación activa de TractorAPI?) then (ConsoleTractorAPI)
+  partition consola {
+    :Mostrar acción por consola;
+  }
+else (WebotsTractorAPI)
+  partition webots {
+    :Traducir instrucción a acciones Webots;
+    :Invocar TractorAutonomo;
+    :Mover tractor o activar tarea\n(arar, fumigar, regar, sembrar);
+  }
+endif
+
+stop
+@enduml

@@ -1,0 +1,68 @@
+@startuml
+title Arquitectura de componentes del sistema PLATA
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+left to right direction
+
+actor Usuario
+
+package "Entrada y ejecución" {
+    [InterpreteConsola] as IC
+    [InterpreteWebots] as IW
+}
+
+package "Núcleo del intérprete" {
+    [Interprete] as Interprete
+}
+
+package "Análisis léxico y sintáctico" {
+    [PLATALexer] as Lexer
+    [PLATAParser] as Parser
+    [PLATAVisitor / PLATABaseVisitor] as BaseVisitor
+}
+
+package "Interpretación semántica" {
+    [MiVisitor] as Visitor
+    [Valor] as Valor
+    [PLATAException] as Exception
+}
+
+package "Abstracción del tractor" {
+    interface "TractorAPI" as TractorAPI
+}
+
+package "Ejecución por consola" {
+    [ConsoleTractorAPI] as ConsoleAPI
+}
+
+package "Simulación Webots" {
+    [WebotsTractorAPI] as WebotsAPI
+    [TractorAutonomo] as Tractor
+    [UtilidadesNavegacion] as Utils
+}
+
+Usuario --> IC : ejecuta en consola
+Usuario --> IW : ejecuta en Webots
+
+IC --> Interprete : crea
+IW --> Interprete : crea
+
+Interprete --> Lexer : analiza texto
+Interprete --> Parser : genera árbol
+Interprete --> Visitor : ejecuta visitor
+
+Parser --> BaseVisitor : genera estructura visitable
+
+Visitor --> Valor : usa
+Visitor --> Exception : lanza errores
+Visitor ..> TractorAPI : invoca acciones
+
+ConsoleAPI ..|> TractorAPI
+WebotsAPI ..|> TractorAPI
+
+WebotsAPI --> Tractor : adapta llamadas
+Tractor --> Utils : usa
+
+@enduml

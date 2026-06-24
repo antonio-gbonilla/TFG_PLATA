@@ -1,0 +1,182 @@
+@startuml
+title Diagrama de Clases Proyecto PLATA
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+hide empty members
+
+package "consola" {
+    class ConsoleTractorAPI {
+        + avanzar(distancia : double, velocidad : double) : void
+        + ajustarVelocidad(velocidad : double) : void
+        + retroceder(distancia : double, velocidad : double) : void
+        + frenar() : void
+        + irA(x : double, z : double, velocidad : double) : void
+        + irOrigen() : void
+        + girar(angulo : double) : void
+        + girarDerecha() : void
+        + girarIzquierda() : void
+        + girarSentidoContrario() : void
+        + mostrar(mensaje : String) : void
+        + arar(estado : boolean) : void
+        + sembrar(estado : boolean) : void
+        + regar(estado : boolean) : void
+        + fumigar(estado : boolean) : void
+    }
+}
+
+package "interpretes" {
+    class Interprete {
+        - tractorAPI : TractorAPI
+        + Interprete(tractorAPI : TractorAPI)
+        + ejecutarPrograma(rutaPrograma : String) : void
+        + ejecutarDesdeConsola() : void
+        - ejecutar(input) : void
+    }
+
+    class InterpreteConsola {
+        + {static} main(args : String[]) : void
+    }
+
+    class InterpreteWebots {
+        + {static} main(args : String[]) : void
+    }
+}
+
+package "plata" {
+    interface TractorAPI {
+        + avanzar(distancia : double, velocidad : double) : void
+        + ajustarVelocidad(velocidad : double) : void
+        + retroceder(distancia : double, velocidad : double) : void
+        + frenar() : void
+        + irA(x : double, z : double, velocidad : double) : void
+        + irOrigen() : void
+        + girar(angulo : double) : void
+        + girarDerecha() : void
+        + girarIzquierda() : void
+        + girarSentidoContrario() : void
+        + mostrar(mensaje : String) : void
+        + arar(estado : boolean) : void
+        + sembrar(estado : boolean) : void
+        + regar(estado : boolean) : void
+        + fumigar(estado : boolean) : void
+    }
+
+    class MiVisitor {
+        + {static} VALOR_PEQUEÑO : double
+        - variables : Map<String, Valor>
+        - tractor : TractorAPI
+        + MiVisitor(tractor : TractorAPI)
+        + visitAsignacion(ctx) : Valor
+        + visitAvanzar(ctx) : Valor
+        + visitAjustar_velocidad(ctx) : Valor
+        + visitRetroceder(ctx) : Valor
+        + visitFrenar(ctx) : Valor
+        + visitIrA(ctx) : Valor
+        + visitIrOrigen(ctx) : Valor
+        + visitGirar(ctx) : Valor
+        + visitGirar_derecha(ctx) : Valor
+        + visitGirar_izquierda(ctx) : Valor
+        + visitGirar_sentido_contrario(ctx) : Valor
+        + visitIniciarTarea(ctx) : Valor
+        + visitFinalizarTarea(ctx) : Valor
+        + visitMostrar(ctx) : Valor
+    }
+
+    class Valor {
+        + {static} VACIO : Valor
+        - valor : Object
+        + Valor(valor : Object)
+        + asBoolean() : Boolean
+        + asDouble() : Double
+        + asString() : String
+        + isDouble() : boolean
+        + isString() : boolean
+        + isBoolean() : boolean
+    }
+
+    class PLATAException {
+        + PLATAException(message : String)
+    }
+
+    interface PLATAVisitor
+    class PLATABaseVisitor
+    class PLATALexer
+    class PLATAParser
+}
+
+package "webots" {
+    class TractorAutonomo {
+        - timeStep : int
+        - DISTANCIA_OBSTACULO : double
+        - MAX_VELOCIDAD : double
+        - MIN_VELOCIDAD : double
+        + TractorAutonomo()
+        + avanzar(distancia : double, velocidad : double) : void
+        + marchaAtras(distancia : double, velocidad : double) : void
+        + marchaAtrasObstaculo() : void
+        + girar(angle : double) : void
+        + frenar() : void
+        + irAPosicion(targetX : double, targetY : double, targetZ : double, velocidad : double) : void
+        + arar(estado : boolean) : void
+        + fumigar(estado : boolean) : void
+        + regar(estado : boolean) : void
+        + sembrar(estado : boolean) : void
+    }
+
+    class UtilidadesNavegacion {
+        + normalizarAngulo(angle : double) : double
+        + distancia(start : double[], end : double[]) : double
+        + calcularAnguloHaciaObjetivo(posicionActual : double[], posicionObjetivo : double[]) : double
+    }
+
+    class WebotsTractorAPI {
+        - tractor : TractorAutonomo
+        + WebotsTractorAPI()
+        + avanzar(distancia : double, velocidad : double) : void
+        + ajustarVelocidad(velocidad : double) : void
+        + retroceder(distancia : double, velocidad : double) : void
+        + frenar() : void
+        + irA(x : double, y : double, velocidad : double) : void
+        + irOrigen() : void
+        + girar(angulo : double) : void
+        + girarDerecha() : void
+        + girarIzquierda() : void
+        + girarSentidoContrario() : void
+        + mostrar(mensaje : String) : void
+        + arar(estado : boolean) : void
+        + sembrar(estado : boolean) : void
+        + regar(estado : boolean) : void
+        + fumigar(estado : boolean) : void
+    }
+}
+
+InterpreteConsola ..> Interprete : crea
+InterpreteConsola ..> ConsoleTractorAPI : usa
+
+InterpreteWebots ..> Interprete : crea
+InterpreteWebots ..> WebotsTractorAPI : usa
+
+Interprete --> TractorAPI : usa
+Interprete ..> PLATALexer : crea
+Interprete ..> PLATAParser : crea
+Interprete ..> MiVisitor : crea/ejecuta
+
+ConsoleTractorAPI ..|> TractorAPI
+WebotsTractorAPI ..|> TractorAPI
+
+MiVisitor --|> PLATABaseVisitor
+PLATABaseVisitor ..|> PLATAVisitor
+
+MiVisitor ..> PLATAParser : visita nodos
+MiVisitor --> TractorAPI : invoca acciones
+MiVisitor --> Valor : evalua/devuelve
+MiVisitor --> PLATAException : lanza
+
+Valor --> PLATAException : error de tipo
+
+WebotsTractorAPI *-- TractorAutonomo : adapta/controla
+TractorAutonomo ..> UtilidadesNavegacion : usa
+
+@enduml

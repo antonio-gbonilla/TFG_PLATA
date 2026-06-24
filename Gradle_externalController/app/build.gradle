@@ -1,0 +1,112 @@
+plugins {
+    id 'antlr'
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+application {
+    mainClass = 'interpretes.InterpreteConsola'
+}
+
+def webotsHome = System.getenv("WEBOTS_HOME") ?: "C:\\Program Files\\Webots"
+def webotsHomeDir = file(webotsHome)
+def webotsExe = file("${webotsHome}\\msys64\\mingw64\\bin\\webots.exe")
+def webotsJavaLib = file("${webotsHome}\\lib\\controller\\java")
+def controllerJar = file("${webotsJavaLib}\\Controller.jar")
+def vehicleJar = file("${webotsJavaLib}\\vehicle.jar")
+
+dependencies {
+    testImplementation libs.junit.jupiter 
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation libs.guava 
+
+    // Dependencias ANTLR
+    antlr "org.antlr:antlr4:4.13.2"
+    implementation "org.antlr:antlr4-runtime:4.13.2"
+
+    // Dependencias de Webots
+    compileOnly files(
+        controllerJar,
+        vehicleJar
+    )
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+generateGrammarSource {
+    arguments += ['-visitor', '-no-listener', '-package', 'plata']
+    outputDirectory = file("src/main/java/plata")
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+def plataArgs = providers.gradleProperty("plataArgs")
+
+tasks.register('runConsola', JavaExec) {
+    group = 'application'
+    description = 'Ejecuta el interprete en modo consola'
+
+    dependsOn tasks.named('classes')
+
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'interpretes.InterpreteConsola'
+    standardInput = System.in
+
+    jvmArgs "-Dfile.encoding=UTF-8",
+            "-Dsun.stdout.encoding=UTF-8",
+            "-Dsun.stderr.encoding=UTF-8"
+
+    if (plataArgs.present) {
+        args plataArgs.get()
+    }
+}
+tasks.register('runWebots', JavaExec) {
+    group = 'application'
+    description = 'Ejecuta el interprete en modo Webots'
+
+    dependsOn tasks.named('classes')
+
+    classpath = sourceSets.main.runtimeClasspath + files(controllerJar, vehicleJar)
+    mainClass = 'interpretes.InterpreteWebots'
+    standardInput = System.in
+
+    jvmArgs "-Djava.library.path=${webotsHome}\\lib\\controller;${webotsHome}\\lib\\controller\\java",
+            "-Dfile.encoding=UTF-8",
+            "-Dsun.stdout.encoding=UTF-8",
+            "-Dsun.stderr.encoding=UTF-8"
+
+    environment 'PATH',
+        "${webotsHome}\\lib\\controller;" +
+        "${webotsHome}\\msys64\\mingw64\\bin;" +
+        "${webotsHome}\\msys64\\mingw64\\bin\\cpp;" +
+        System.getenv('PATH')
+
+    doFirst {
+        if (!webotsHomeDir.exists()) {
+            throw new GradleException("No se encontro WEBOTS_HOME en: ${webotsHome}")
+        }
+        if (!controllerJar.exists()) {
+            throw new GradleException("No se encontro Controller.jar en: ${controllerJar}")
+        }
+        if (!vehicleJar.exists()) {
+            throw new GradleException("No se encontro vehicle.jar en: ${vehicleJar}")
+        }
+    }
+
+    if (plataArgs.present) {
+        args plataArgs.get()
+    }
+}

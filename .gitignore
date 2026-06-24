@@ -1,0 +1,60 @@
+# =========================
+# Gradle / Java
+# =========================
+.gradle/
+build/
+**/build/
+out/
+*.class
+*.log
+*.tmp
+
+# =========================
+# Distribuciones y artefactos generados
+# =========================
+*.jar
+*.war
+*.ear
+**/distributions/
+**/install/
+**/reports/
+
+# =========================
+# Gradle Wrapper
+# =========================
+!gradlew
+!gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# =========================
+# ANTLR generado
+# =========================
+**/generated/
+**/generated-src/
+**/.antlr/
+**/*.tokens
+**/*.interp
+
+# =========================
+# VS Code / IDEs
+# =========================
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# =========================
+# Sistema operativo
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Temporales
+# =========================
+*~
+*.swp

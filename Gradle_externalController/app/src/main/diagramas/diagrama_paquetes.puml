@@ -1,0 +1,59 @@
+@startuml
+title Diagrama de paquetes UML de la arquitectura del sistema PLATA
+
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+left to right direction
+
+package "interpretes" {
+}
+
+package "plata" {
+}
+
+package "consola" {
+}
+
+package "webots" {
+}
+
+interpretes --> plata 
+interpretes --> consola 
+interpretes --> webots  
+
+consola --> plata  
+webots --> plata 
+
+note bottom of interpretes
+Contiene:
+- Interprete
+- InterpreteConsola
+- InterpreteWebots
+end note
+
+note bottom of plata
+Contiene:
+- TractorAPI
+- MiVisitor
+- Valor
+- PLATAException
+- PLATALexer
+- PLATAParser
+- PLATAVisitor
+- PLATABaseVisitor
+end note
+
+note bottom of consola
+Contiene:
+- ConsoleTractorAPI
+end note
+
+note bottom of webots
+Contiene:
+- WebotsTractorAPI
+- TractorAutonomo
+- UtilidadesNavegacion
+end note
+
+@enduml

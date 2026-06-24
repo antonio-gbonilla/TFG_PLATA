@@ -1,0 +1,10 @@
+hora = 10
+si (hora < 8) {
+    mostrar("Es demasiado pronto para trabajar")
+} siNoSi ( hora <= 16) {
+    irA(117, -30.34, 5)
+} siNoSi (hora <= 18) {
+    irAOrigen
+} siNo {
+    frenar
+}

@@ -1,0 +1,53 @@
+@startuml
+title Paquete interpretes
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+hide empty members
+
+package "interpretes" {
+    class Interprete {
+        - tractorAPI : TractorAPI
+        + Interprete(tractorAPI : TractorAPI)
+        + ejecutarPrograma(rutaPrograma : String) : void
+        + ejecutarDesdeConsola() : void
+        - ejecutar(input) : void
+    }
+
+    class InterpreteConsola {
+        + {static} main(args : String[]) : void
+    }
+
+    class InterpreteWebots {
+        + {static} main(args : String[]) : void
+    }
+}
+
+package "plata" {
+    interface TractorAPI
+    class MiVisitor
+    class PLATALexer
+    class PLATAParser
+}
+
+package "consola" {
+    class ConsoleTractorAPI
+}
+
+package "webots" {
+    class WebotsTractorAPI
+}
+
+InterpreteConsola ..> Interprete : crea
+InterpreteConsola ..> ConsoleTractorAPI : usa
+
+InterpreteWebots ..> Interprete : crea
+InterpreteWebots ..> WebotsTractorAPI : usa
+
+Interprete --> TractorAPI : usa
+Interprete ..> PLATALexer : crea
+Interprete ..> PLATAParser : crea
+Interprete ..> MiVisitor : crea/ejecuta
+
+@enduml

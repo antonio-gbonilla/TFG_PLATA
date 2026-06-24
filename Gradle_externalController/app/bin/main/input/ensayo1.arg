@@ -1,0 +1,7 @@
+vueltas = 0
+mientras (vueltas < 5) {
+    avanzar(5, 4)
+    girarSentidoContrario
+    vueltas = vueltas + 1
+}
+
